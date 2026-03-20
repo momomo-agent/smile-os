@@ -14,8 +14,29 @@
       <span>{{ typeLabel }}</span>
     </div>
 
+    <!-- message (incoming messages digested by AI) -->
+    <template v-if="card.type === 'message'">
+      <div class="win-body msg-card">
+        <div class="msg-header">
+          <span class="msg-avatar">{{ card.data.avatar || '👤' }}</span>
+          <div class="msg-meta">
+            <span class="msg-sender">{{ card.data.from || '未知' }}</span>
+            <span class="msg-app">{{ card.data.app || '' }}</span>
+          </div>
+          <span v-if="card.data.count" class="msg-badge">{{ card.data.count }}</span>
+          <span v-if="card.data.urgent" class="msg-urgent">急</span>
+        </div>
+        <div class="msg-digest">{{ card.data.digest || '' }}</div>
+        <div v-if="card.data.suggestion" class="msg-suggestion">
+          <span class="msg-suggestion-label">建议回复</span>
+          <span class="msg-suggestion-text">{{ card.data.suggestion }}</span>
+        </div>
+        <div v-if="card.data.time" class="msg-time">{{ card.data.time }}</div>
+      </div>
+    </template>
+
     <!-- card -->
-    <template v-if="card.type === 'card'">
+    <template v-else-if="card.type === 'card'">
       <img
         v-if="card.data.image"
         :src="card.data.image"
@@ -229,7 +250,7 @@ const blockRef = ref(null)
 const glowBreathing = ref(false)
 
 const typeLabels = {
-  card: 'card', metric: 'data', steps: 'timeline', columns: 'compare',
+  message: 'message', card: 'card', metric: 'data', steps: 'timeline', columns: 'compare',
   callout: 'quote', code: 'code', markdown: 'note', media: 'media',
   chart: 'chart', list: 'list', embed: 'embed',
 }

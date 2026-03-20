@@ -110,6 +110,59 @@
   .v-block { max-width: calc(100vw - 48px) !important; min-width: 100px !important; }
 }
 
+/* ── Message card (incoming messages) ── */
+.msg-card { padding: 14px !important; }
+.msg-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.msg-avatar {
+  font-size: 28px; line-height: 1;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(180,150,110,0.08); border-radius: 50%;
+  flex-shrink: 0;
+}
+.msg-meta {
+  flex: 1; display: flex; flex-direction: column; gap: 1px;
+}
+.msg-sender {
+  font-size: 14px; font-weight: 600; color: #3a2a18;
+}
+.msg-app {
+  font-size: 10px; color: #a09080; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.msg-badge {
+  background: rgba(232,133,106,0.15); color: #d06040;
+  font-size: 11px; font-weight: 600;
+  padding: 2px 8px; border-radius: 10px;
+}
+.msg-urgent {
+  background: rgba(232,80,60,0.15); color: #c03020;
+  font-size: 10px; font-weight: 700;
+  padding: 2px 6px; border-radius: 4px;
+  letter-spacing: 1px;
+}
+.msg-digest {
+  font-size: 13px; line-height: 1.6; color: #5a4a38;
+  margin-bottom: 8px;
+}
+.msg-suggestion {
+  background: rgba(180,150,110,0.06);
+  border: 1px solid rgba(180,150,110,0.1);
+  border-radius: 8px; padding: 8px 10px;
+  margin-bottom: 6px;
+}
+.msg-suggestion-label {
+  font-size: 10px; color: #a09080; text-transform: uppercase;
+  letter-spacing: 0.5px; display: block; margin-bottom: 3px;
+}
+.msg-suggestion-text {
+  font-size: 13px; color: #4a3a2a; font-style: italic;
+}
+.msg-time {
+  font-size: 11px; color: #b0a090; text-align: right;
+}
+
 /* Mic recording state */
 .mic-btn.recording {
   background: rgba(232,133,106,0.2);

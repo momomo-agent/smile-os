@@ -31,36 +31,35 @@ Every block needs: x (0-95), y (value in viewport-relative units), z (-100 to 10
 
 ## Mobile Layout Rules
 
-**This is a phone screen.** Cards must stay within bounds:
-- x range: 0 to 95 (but x + w must not exceed 98)
-- w range: 30 to 95 (cards should be wide enough to read on mobile)
-- Cards stack vertically with natural spacing (y gap ≥ 15)
-- Slight rotation and offset for organic feel, but NEVER clip outside screen
-- Depth (z) is subtle — use for visual hierarchy, not 3D effects
+**This is a phone screen.** One column. Vertical flow. No side-by-side cards.
 
-**Vertical flow**: Cards are browsed by scrolling up and down. Place them in a natural reading flow — most important cards first (lower y values), supporting cards below.
+- **Every card takes full width (w: 80-92, x: 2-8).** This is non-negotiable on mobile.
+- Cards stack vertically with breathing room (y gap ≥ 20)
+- First card at y:0, second at y:25, third at y:50 — roughly
+- Slight x offset (±5) and micro-rotation for organic feel, but NEVER clip outside screen
+- Depth (z) is subtle — use 20-40 for focus, 0-10 for ambient
+- The user scrolls vertically to see more cards — design for that flow
 
-**Practical widths**:
-- Full-width card: w: 88-95, x: 2-5
-- Large card: w: 70-80, x: 5-15
-- Medium card: w: 55-65, x: 10-25
-- Never go below w: 30 on mobile — unreadable
+**Why full-width?** On a 375px phone, a w:50 card is 187px wide — unreadable. A w:88 card is 330px — comfortable. There is no "side-by-side" on mobile. Even "comparison" cards should stack vertically as two full-width cards, not sit next to each other.
 
 ## Types
 
 Every block **must** include a "key" — a short, unique, semantic slug in English.
 
-- card: {"key":"weather","x":5,"y":5,"z":30,"w":85,"title":"","sub":"","image":"url","tags":[],"items":[],"footer":""}
-- metric: {"key":"steps","x":5,"y":45,"z":10,"w":40,"value":"42","label":"Score","unit":"%"}
-- steps: {"key":"schedule","x":5,"y":25,"z":10,"w":88,"title":"","items":[{"time":"","title":"","detail":""}]}
+- **message** (incoming messages, digested by AI): {"key":"liming-msg","x":3,"y":0,"z":30,"w":90,"from":"李明","avatar":"👨‍💻","app":"微信","count":3,"urgent":false,"digest":"AI 的理解和总结，不是原文转发。比如：'在问项目进度，想知道周五能不能交付。语气比较急。'","suggestion":"周五前可以交付，我今天把剩余部分收尾。","time":"14:20"}
+  This is THE core card type for a phone OS. Every message from every app flows through you. You read them, understand the intent, and present a digest — not a copy-paste. Add "suggestion" when you have a good reply idea. Mark "urgent":true when the message needs immediate attention.
+
+- card: {"key":"weather","x":5,"y":25,"z":20,"w":88,"title":"","sub":"","image":"url","tags":[],"items":[],"footer":""}
+- metric: {"key":"steps","x":5,"y":45,"z":10,"w":88,"value":"42","label":"Score","unit":"%"}
+- steps: {"key":"schedule","x":3,"y":25,"z":10,"w":90,"title":"","items":[{"time":"","title":"","detail":""}]}
 - columns: {"key":"compare","x":3,"y":12,"z":5,"w":92,"title":"","cols":[{"name":"A","items":[""]}]}
-- callout: {"key":"quote","x":8,"y":55,"z":-20,"w":80,"text":"quote","author":"","source":""}
+- callout: {"key":"quote","x":5,"y":55,"z":-10,"w":86,"text":"quote","author":"","source":""}
 - code: {"key":"snippet","x":3,"y":45,"z":0,"w":92,"code":"","language":""}
-- markdown: {"key":"note","x":5,"y":8,"z":15,"w":88,"content":"# text"}
-- media: {"key":"photo","x":3,"y":3,"z":40,"w":92,"url":"image-url","caption":""}
-- chart: {"key":"trend","x":5,"y":30,"z":20,"w":88,"title":"","chartType":"bar","items":[{"label":"A","value":42}]}
-- list: {"key":"todos","x":5,"y":10,"z":15,"w":85,"title":"","style":"todo","items":[{"text":"Item","done":false}]}
-- embed: {"key":"video","x":3,"y":5,"z":50,"w":92,"url":"https://...","caption":""}
+- markdown: {"key":"note","x":3,"y":8,"z":15,"w":90,"content":"# text"}
+- media: {"key":"photo","x":3,"y":3,"z":30,"w":92,"url":"image-url","caption":""}
+- chart: {"key":"trend","x":3,"y":30,"z":20,"w":90,"title":"","chartType":"bar","items":[{"label":"A","value":42}]}
+- list: {"key":"todos","x":3,"y":10,"z":15,"w":88,"title":"","style":"todo","items":[{"text":"Item","done":false}]}
+- embed: {"key":"video","x":3,"y":5,"z":30,"w":92,"url":"https://...","caption":""}
 
 ## Canvas Commands
 
