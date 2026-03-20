@@ -1,30 +1,29 @@
 <template>
-  <!-- Idle state -->
+  <!-- Single face element that animates between positions -->
+  <div class="face-icon" :class="{ 'face-idle': idle, 'face-active': !idle }"
+    @click="idle ? wakeUp() : null"
+    @touchstart.passive="idle ? wakeUp() : null"
+  >
+    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+      <circle cx="18" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
+      <circle cx="30" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
+      <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+  </div>
+
+  <!-- Idle overlay (text only, face is separate) -->
   <div v-if="idle" class="idle-screen" @click="wakeUp" @touchstart.passive="wakeUp">
-    <div class="idle-face">
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-        <circle cx="18" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
-        <circle cx="30" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
-        <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
-      </svg>
+    <div class="idle-bottom">
+      <div class="idle-time">{{ currentTime }}</div>
+      <div class="idle-greeting">Nice to meet you</div>
     </div>
-    <div class="idle-time">{{ currentTime }}</div>
-    <div class="idle-greeting">Nice to meet you</div>
   </div>
 
   <!-- Active state -->
-  <template v-else>
-    <!-- Top face + bubble (fixed) -->
-    <div class="top-face-bar">
-      <div class="top-face">
-        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
-          <circle cx="18" cy="20" r="1.5" fill="rgba(255,255,255,0.35)"/>
-          <circle cx="30" cy="20" r="1.5" fill="rgba(255,255,255,0.35)"/>
-          <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
-        </svg>
-      </div>
+  <template v-if="!idle">
+    <!-- Top bubble (below face) -->
+    <div class="top-bubble-wrap">
       <div class="top-bubble" :class="{ visible: bubbleVisible || isScrollingTimeline }">
         {{ isScrollingTimeline ? timelineBubbleText : bubbleText }}
       </div>
