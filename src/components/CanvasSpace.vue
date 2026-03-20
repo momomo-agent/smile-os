@@ -141,18 +141,8 @@ function onExpandTouchEnd() {
   swipeY.value = 0
 }
 
-// 3D parallax (desktop only, subtle on mobile)
-function onMouseMove(e) {
-  if (!spaceRef.value) return
-  const rx = (e.clientY / window.innerHeight - 0.5) * -4
-  const ry = (e.clientX / window.innerWidth - 0.5) * 4
-  spaceRef.value.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`
-}
+// No desktop parallax — mobile-first
 
-onMounted(() => {
-  document.addEventListener('mousemove', onMouseMove)
-})
-onUnmounted(() => {
-  document.removeEventListener('mousemove', onMouseMove)
-})
+onMounted(() => {})
+onUnmounted(() => {})
 </script>

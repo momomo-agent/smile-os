@@ -4,7 +4,7 @@
   background: rgba(255,252,248,0.88); backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,0.5);
   border-radius: 12px;
-  min-width: 180px; max-width: 460px;
+  min-width: 120px; max-width: calc(100vw - 48px);
   transform-style: preserve-3d;
   box-shadow: 0 0 0 rgba(255,200,120,0), 0 0 0 rgba(255,180,100,0), 0 0 0 rgba(255,160,80,0), 0 4px 20px rgba(0,0,0,0.25);
   overflow: hidden;
@@ -13,10 +13,10 @@
   transition: transform 0.8s cubic-bezier(.16,1,.3,1), opacity 0.8s cubic-bezier(.16,1,.3,1), filter 0.8s, box-shadow 0.6s, border-color 0.6s, left 1s cubic-bezier(.22,1,.36,1), top 1s cubic-bezier(.22,1,.36,1);
 }
 .v-block, .v-block * {
-  cursor: grab !important;
+  cursor: default !important;
 }
 .v-block:active, .v-block:active * {
-  cursor: grabbing !important;
+  cursor: default !important;
 }
 .v-block:hover {
   box-shadow: 0 0 0 rgba(255,200,120,0), 0 0 0 rgba(255,180,100,0), 0 0 0 rgba(255,160,80,0), 0 8px 32px rgba(0,0,0,0.35);
@@ -107,7 +107,7 @@
 .v-block .img-grid img { aspect-ratio: 16/10; object-fit: cover; border-radius: 3px; }
 
 @media (max-width: 640px) {
-  .v-block { max-width: 90vw; }
+  .v-block { max-width: calc(100vw - 48px) !important; min-width: 100px !important; }
 }
 
 /* Mic recording state */

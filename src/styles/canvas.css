@@ -1,15 +1,23 @@
-/* ── Canvas (3D space) ── */
+/* ── Canvas (scrollable mobile space) ── */
 .canvas {
-  position: absolute; inset: 0; overflow: hidden;
+  position: fixed; inset: 0;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   perspective: 1400px;
   perspective-origin: 50% 50%;
   background: radial-gradient(ellipse at 40% 40%, #1e1812 0%, #111 60%, #0a0a08 100%);
+  padding-top: 100px; /* space for top face bar */
+  padding-bottom: 80px; /* space for bottom bar */
 }
 
 .canvas-space {
-  position: absolute; inset: 0;
+  position: relative;
   transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(.23,1,.32,1);
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 0 16px;
   pointer-events: none;
 }
 
