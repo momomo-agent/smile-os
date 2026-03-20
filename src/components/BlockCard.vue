@@ -5,9 +5,6 @@
     :class="{ selected: card.selected, 'glow-breathe': card.selected && glowBreathing }"
     :style="cardStyle"
     @click.stop="onClick"
-    @mousedown="onMouseDown"
-    @mouseenter="onMouseEnter"
-    @mouseleave="onMouseLeave"
   >
     <div class="win-bar">
       <div class="win-dot"></div>
@@ -261,11 +258,10 @@ const cardStyle = computed(() => {
   const c = props.card
   const hasImage = c.type === 'media' || (c.type === 'card' && c.data.image)
   return {
-    left: `${c.x}%`,
-    top: `${c.y}%`,
+    marginLeft: `${c.x}%`,
+    marginTop: '12px',
     width: c.w ? `${c.w}%` : undefined,
     maxWidth: hasImage ? '380px' : undefined,
-    transform: `translateZ(${c.z}px) scale(${c.scale})`,
     opacity: c.opacity,
     zIndex: c.zIndex,
     filter: c.blur > 0 ? `blur(${c.blur}px)` : 'none',
