@@ -1,19 +1,16 @@
-/* ── Canvas (scrollable mobile space) ── */
+/* ── Canvas (scrollable, Mercury fog style) ── */
 .canvas {
   position: fixed; inset: 0;
   overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  perspective: 1400px;
-  perspective-origin: 50% 50%;
-  background: radial-gradient(ellipse at 40% 40%, #1e1812 0%, #111 60%, #0a0a08 100%);
-  padding-top: 100px; /* space for top face bar */
-  padding-bottom: 80px; /* space for bottom bar */
+  background: linear-gradient(165deg, #e8e6e3 0%, #ddd9d4 40%, #d5d0ca 100%);
+  padding-top: 90px;
+  padding-bottom: 80px;
 }
 
 .canvas-space {
   position: relative;
-  transform-style: preserve-3d;
   width: 100%;
   max-width: 400px;
   margin: 0 auto;
@@ -24,8 +21,8 @@
 .greeting {
   position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 24px; font-weight: 200; color: rgba(196,168,130,0.12);
-  letter-spacing: 8px; text-transform: lowercase;
+  font-size: 20px; font-weight: 300; color: rgba(0,0,0,0.08);
+  letter-spacing: 6px; text-transform: lowercase;
   transition: opacity 0.8s;
 }
 .greeting.hidden { opacity: 0; pointer-events: none; }
