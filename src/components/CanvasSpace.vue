@@ -18,6 +18,7 @@
         @toggle-select="(e) => toggleSelect(id, e)"
         @update-position="(x, y) => updateCardPosition(id, x, y)"
         @dblclick="() => handleDblClick(id)"
+        @touchend="(e) => handleCardTap(id, e)"
       />
     </div>
 
@@ -107,9 +108,27 @@ function handleBgClick(e) {
   emit('click-canvas')
 }
 
-// Double-click to expand
+// Double-click to expand (desktop)
 function handleDblClick(id) {
   emit('expand-card', id)
+}
+
+// Touch double-tap detection (mobile)
+let lastTapTime = 0
+let lastTapId = null
+function handleCardTap(id, e) {
+  const now = Date.now()
+  if (lastTapId === id && now - lastTapTime < 350) {
+    // Double tap detected
+    e.preventDefault()
+    e.stopPropagation()
+    lastTapTime = 0
+    lastTapId = null
+    emit('expand-card', id)
+  } else {
+    lastTapTime = now
+    lastTapId = id
+  }
 }
 
 // Expanded card swipe-to-close
