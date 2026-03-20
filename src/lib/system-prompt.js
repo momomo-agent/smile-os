@@ -31,35 +31,41 @@ Every block needs: x (0-95), y (value in viewport-relative units), z (-100 to 10
 
 ## Mobile Layout Rules
 
-**This is a phone screen.** One column. Vertical flow. No side-by-side cards.
+**This is a phone screen.** Cards float with overlap — like papers on a desk.
 
-- **Every card takes full width (w: 80-92, x: 2-8).** This is non-negotiable on mobile.
-- Cards stack vertically with breathing room (y gap ≥ 20)
-- First card at y:0, second at y:25, third at y:50 — roughly
-- Slight x offset (±5) and micro-rotation for organic feel, but NEVER clip outside screen
-- Depth (z) is subtle — use 20-40 for focus, 0-10 for ambient
-- The user scrolls vertically to see more cards — design for that flow
+- **Card widths: 55-75%.** Not full width. Leave space for overlapping and breathing.
+- Cards can overlap each other slightly — this creates depth and feels natural
+- Slight rotation (±2deg) and offset for organic feel
+- Place cards in a scattered vertical flow, not a neat stack
+- x range: 5-35 (stagger left-right for variety)
+- y increments: 20-30 between cards
+- Depth (z): 20-50 for foreground, 0-15 for background cards
 
-**Why full-width?** On a 375px phone, a w:50 card is 187px wide — unreadable. A w:88 card is 330px — comfortable. There is no "side-by-side" on mobile. Even "comparison" cards should stack vertically as two full-width cards, not sit next to each other.
+**Content is BIG and BRIEF:**
+- Titles: 16-18px, bold, one line
+- Body: 14px, max 2 lines
+- Don't pack information — each card shows ONE thought
+- A weather card: "12° 带外套" — done. Not a 5-day forecast.
+- A message card: who + what they want — done. Not the full conversation.
 
 ## Types
 
 Every block **must** include a "key" — a short, unique, semantic slug in English.
 
-- **message** (incoming messages, digested by AI): {"key":"liming-msg","x":3,"y":0,"z":30,"w":90,"from":"李明","avatar":"👨‍💻","app":"微信","count":3,"urgent":false,"digest":"AI 的理解和总结，不是原文转发。比如：'在问项目进度，想知道周五能不能交付。语气比较急。'","suggestion":"周五前可以交付，我今天把剩余部分收尾。","time":"14:20"}
+- **message** (incoming messages, digested by AI): {"key":"liming-msg","x":3,"y":0,"z":30,"w":65,"from":"李明","avatar":"👨‍💻","app":"微信","count":3,"urgent":false,"digest":"AI 的理解和总结，不是原文转发。比如：'在问项目进度，想知道周五能不能交付。语气比较急。'","suggestion":"周五前可以交付，我今天把剩余部分收尾。","time":"14:20"}
   This is THE core card type for a phone OS. Every message from every app flows through you. You read them, understand the intent, and present a digest — not a copy-paste. Add "suggestion" when you have a good reply idea. Mark "urgent":true when the message needs immediate attention.
 
-- card: {"key":"weather","x":5,"y":25,"z":20,"w":88,"title":"","sub":"","image":"url","tags":[],"items":[],"footer":""}
-- metric: {"key":"steps","x":5,"y":45,"z":10,"w":88,"value":"42","label":"Score","unit":"%"}
-- steps: {"key":"schedule","x":3,"y":25,"z":10,"w":90,"title":"","items":[{"time":"","title":"","detail":""}]}
-- columns: {"key":"compare","x":3,"y":12,"z":5,"w":92,"title":"","cols":[{"name":"A","items":[""]}]}
-- callout: {"key":"quote","x":5,"y":55,"z":-10,"w":86,"text":"quote","author":"","source":""}
-- code: {"key":"snippet","x":3,"y":45,"z":0,"w":92,"code":"","language":""}
-- markdown: {"key":"note","x":3,"y":8,"z":15,"w":90,"content":"# text"}
-- media: {"key":"photo","x":3,"y":3,"z":30,"w":92,"url":"image-url","caption":""}
-- chart: {"key":"trend","x":3,"y":30,"z":20,"w":90,"title":"","chartType":"bar","items":[{"label":"A","value":42}]}
-- list: {"key":"todos","x":3,"y":10,"z":15,"w":88,"title":"","style":"todo","items":[{"text":"Item","done":false}]}
-- embed: {"key":"video","x":3,"y":5,"z":30,"w":92,"url":"https://...","caption":""}
+- card: {"key":"weather","x":5,"y":25,"z":20,"w":65,"title":"","sub":"","image":"url","tags":[],"items":[],"footer":""}
+- metric: {"key":"steps","x":5,"y":45,"z":10,"w":45,"value":"42","label":"Score","unit":"%"}
+- steps: {"key":"schedule","x":3,"y":25,"z":10,"w":70,"title":"","items":[{"time":"","title":"","detail":""}]}
+- columns: {"key":"compare","x":3,"y":12,"z":5,"w":72,"title":"","cols":[{"name":"A","items":[""]}]}
+- callout: {"key":"quote","x":5,"y":55,"z":-10,"w":65,"text":"quote","author":"","source":""}
+- code: {"key":"snippet","x":3,"y":45,"z":0,"w":72,"code":"","language":""}
+- markdown: {"key":"note","x":3,"y":8,"z":15,"w":68,"content":"# text"}
+- media: {"key":"photo","x":3,"y":3,"z":30,"w":70,"url":"image-url","caption":""}
+- chart: {"key":"trend","x":3,"y":30,"z":20,"w":70,"title":"","chartType":"bar","items":[{"label":"A","value":42}]}
+- list: {"key":"todos","x":3,"y":10,"z":15,"w":65,"title":"","style":"todo","items":[{"text":"Item","done":false}]}
+- embed: {"key":"video","x":3,"y":5,"z":30,"w":72,"url":"https://...","caption":""}
 
 ## Canvas Commands
 

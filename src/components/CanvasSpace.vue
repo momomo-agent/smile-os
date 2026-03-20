@@ -12,32 +12,15 @@
         :key="id"
         :card="card"
         :class="{
-          'card-faded': expandedId && expandedId !== id,
-          'card-expanded': expandedId === id
+          'card-dimmed': expandedId && expandedId !== id,
+          'card-zoomed': expandedId === id
         }"
+        :style="expandedId === id ? zoomedStyle : {}"
         @toggle-select="(e) => toggleSelect(id, e)"
         @update-position="(x, y) => updateCardPosition(id, x, y)"
         @dblclick="() => handleDblClick(id)"
         @touchend="(e) => handleCardTap(id, e)"
       />
-    </div>
-
-    <!-- Expanded overlay -->
-    <div v-if="expandedId" class="expanded-overlay"
-      @touchstart.passive="onExpandTouchStart"
-      @touchmove.passive="onExpandTouchMove"
-      @touchend="onExpandTouchEnd"
-    >
-      <div class="expanded-card" :style="expandStyle">
-        <BlockCard
-          v-for="[id, card] in cards"
-          :key="'exp-' + id"
-          v-show="id === expandedId"
-          :card="card"
-          style="position:relative;width:100%;max-width:100%;transform:none;opacity:1;filter:none;"
-        />
-      </div>
-      <div class="swipe-hint" :style="{ opacity: swipeFraction }">↑ 上滑关闭</div>
     </div>
   </div>
 </template>
@@ -59,7 +42,6 @@ const spaceRef = ref(null)
 const canvasRef = ref(null)
 const expandedId = computed(() => props.expandedCardId)
 
-// Canvas height — enough to scroll through all cards
 const canvasHeight = computed(() => {
   let maxBottom = window.innerHeight
   for (const [, card] of cards.value) {
@@ -68,6 +50,16 @@ const canvasHeight = computed(() => {
   }
   return maxBottom
 })
+
+// Zoomed card style — scale up in place, highest z-index
+const zoomedStyle = computed(() => ({
+  transform: 'scale(1.35) translateZ(200px)',
+  zIndex: 9999,
+  filter: 'none',
+  opacity: 1,
+  width: '85%',
+  transition: 'transform 0.4s cubic-bezier(.16,1,.3,1), z-index 0s, width 0.4s cubic-bezier(.16,1,.3,1), opacity 0.3s, filter 0.3s',
+}))
 
 // Long press detection
 let longPressTimer = null
@@ -103,14 +95,23 @@ function onTouchEnd() {
 }
 
 function handleBgClick(e) {
-  if (e.target.closest('.v-block') || e.target.closest('.input-bar')) return
+  if (e.target.closest('.v-block')) return
+  // If a card is expanded, collapse it
+  if (expandedId.value) {
+    emit('collapse-card')
+    return
+  }
   clearSelection()
   emit('click-canvas')
 }
 
 // Double-click to expand (desktop)
 function handleDblClick(id) {
-  emit('expand-card', id)
+  if (expandedId.value === id) {
+    emit('collapse-card')
+  } else {
+    emit('expand-card', id)
+  }
 }
 
 // Touch double-tap detection (mobile)
@@ -119,48 +120,20 @@ let lastTapId = null
 function handleCardTap(id, e) {
   const now = Date.now()
   if (lastTapId === id && now - lastTapTime < 350) {
-    // Double tap detected
     e.preventDefault()
     e.stopPropagation()
     lastTapTime = 0
     lastTapId = null
-    emit('expand-card', id)
+    if (expandedId.value === id) {
+      emit('collapse-card')
+    } else {
+      emit('expand-card', id)
+    }
   } else {
     lastTapTime = now
     lastTapId = id
   }
 }
-
-// Expanded card swipe-to-close
-const swipeY = ref(0)
-const swipeFraction = computed(() => Math.min(swipeY.value / 200, 1))
-const expandStyle = computed(() => {
-  if (swipeY.value <= 0) return {}
-  const scale = 1 - swipeY.value / 1000
-  const ty = -swipeY.value * 0.5
-  return {
-    transform: `scale(${Math.max(scale, 0.7)}) translateY(${ty}px)`,
-    borderRadius: `${Math.min(swipeY.value / 5, 20)}px`
-  }
-})
-
-let expandTouchStartY = 0
-function onExpandTouchStart(e) {
-  expandTouchStartY = e.touches[0].clientY
-  swipeY.value = 0
-}
-function onExpandTouchMove(e) {
-  const dy = expandTouchStartY - e.touches[0].clientY
-  swipeY.value = Math.max(dy, 0)
-}
-function onExpandTouchEnd() {
-  if (swipeY.value > 100) {
-    emit('collapse-card')
-  }
-  swipeY.value = 0
-}
-
-// No desktop parallax — mobile-first
 
 onMounted(() => {})
 onUnmounted(() => {})

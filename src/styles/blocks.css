@@ -35,9 +35,9 @@
 .v-block .win-body { padding: 16px; }
 
 /* Block content — light text on translucent dark card */
-.v-block h2 { color: rgba(255,255,255,0.9); font-size: 16px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.3px; }
-.v-block h3 { color: rgba(255,255,255,0.8); font-size: 14px; font-weight: 500; margin: 0 0 8px; }
-.v-block .sub { color: rgba(255,255,255,0.5); font-size: 13px; margin-bottom: 8px; line-height: 1.5; }
+.v-block h2 { color: rgba(255,255,255,0.9); font-size: 18px; font-weight: 600; margin: 0 0 6px; letter-spacing: -0.3px; }
+.v-block h3 { color: rgba(255,255,255,0.8); font-size: 16px; font-weight: 500; margin: 0 0 8px; }
+.v-block .sub { color: rgba(255,255,255,0.5); font-size: 14px; margin-bottom: 8px; line-height: 1.5; }
 .v-block .tags { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 8px; }
 .v-block .tag { color: rgba(255,255,255,0.5); font-size: 10px; background: rgba(255,255,255,0.06); padding: 3px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); }
 .v-block img { width: 100%; display: block; pointer-events: none; user-select: none; -webkit-user-drag: none; border-radius: 0; }
@@ -47,7 +47,7 @@
 .v-block .big-num { font-size: 36px; font-weight: 200; color: rgba(255,255,255,0.9); letter-spacing: -1px; text-align: center; }
 .v-block .big-label { color: rgba(255,255,255,0.4); font-size: 10px; text-align: center; text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
 
-.v-block .list-item { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); font-size: 13px; }
+.v-block .list-item { padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.7); font-size: 14px; }
 .v-block .list-item:last-child { border-bottom: none; }
 
 .v-block .md-body { font-size: 13px; line-height: 1.7; color: rgba(255,255,255,0.7); }
@@ -108,7 +108,7 @@
   flex: 1; display: flex; flex-direction: column; gap: 1px;
 }
 .msg-sender {
-  font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9);
+  font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.9);
 }
 .msg-app {
   font-size: 10px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.5px;
@@ -125,7 +125,7 @@
   letter-spacing: 1px;
 }
 .msg-digest {
-  font-size: 13px; line-height: 1.6; color: rgba(255,255,255,0.65);
+  font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.65);
   margin-bottom: 8px;
 }
 .msg-suggestion {
