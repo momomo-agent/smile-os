@@ -1,37 +1,66 @@
 <template>
-  <CanvasSpace @click-canvas="blurInput" />
-  <SpeechBubble
-    :text="isScrollingTimeline ? timelineBubbleText : bubbleText"
-    :visible="isScrollingTimeline ? timelineBubbleVisible : bubbleVisible"
-  />
-  <ThinkingDots :visible="isThinking" />
-  <InputBar
-    ref="inputBar"
-    :recording="sttRecording"
-    :mic-active="spaceDown"
-    :voice-enabled="voiceEnabled"
-    @send="handleSend"
-    @mic-down="startRecording"
-    @mic-up="stopRecording"
-  />
-  <div class="tool-log">
-    <div
-      v-for="log in toolLogs"
-      :key="log.id"
-      class="tool-log-item"
-      :class="{ fading: log.fading }"
-    >{{ log.text }}</div>
+  <!-- Idle state -->
+  <div v-if="idle" class="idle-screen" @click="wakeUp" @touchstart.passive="wakeUp">
+    <div class="idle-face">😊</div>
+    <div class="idle-time">{{ currentTime }}</div>
   </div>
+
+  <!-- Active state -->
+  <template v-else>
+    <!-- Top face + bubble (fixed) -->
+    <div class="top-face-bar">
+      <div class="top-face">😊</div>
+      <div class="top-bubble" :class="{ visible: bubbleVisible || isScrollingTimeline }">
+        {{ isScrollingTimeline ? timelineBubbleText : bubbleText }}
+      </div>
+    </div>
+
+    <CanvasSpace
+      @click-canvas="handleCanvasClick"
+      @longpress-canvas="startRecording"
+      @longpress-end="stopRecording"
+      :expanded-card-id="expandedCardId"
+      @expand-card="expandCard"
+      @collapse-card="collapseCard"
+    />
+    <ThinkingDots :visible="isThinking" />
+
+    <!-- Bottom floating bar -->
+    <div class="bottom-bar" :class="{ 'input-open': inputOpen }">
+      <div v-if="!inputOpen" class="bottom-hint"
+        @click="inputOpen = true"
+        @touchstart.passive="onBottomTouchStart"
+        @touchend="onBottomTouchEnd"
+        @touchcancel="onBottomTouchEnd"
+      >
+        <div class="bottom-line"></div>
+        <span v-if="sttRecording" class="bottom-stt-text">{{ sttText || '说话中...' }}</span>
+      </div>
+      <div v-else class="bottom-input-wrap">
+        <input
+          ref="bottomInput"
+          v-model="inputText"
+          placeholder="说点什么..."
+          @keydown.enter="sendText"
+          @blur="maybeCloseInput"
+        />
+        <button class="send-btn" @click="sendText" :disabled="!inputText.trim()">↑</button>
+      </div>
+    </div>
+
+    <!-- Recording pulse overlay -->
+    <div class="recording-pulse" :class="{ active: sttRecording }"></div>
+    <div v-if="sttRecording && sttText" class="stt-live-text">{{ sttText }}</div>
+  </template>
+
   <button class="gear-btn" @click="configOpen = true">⚙</button>
   <ConfigPanel v-model:open="configOpen" />
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import CanvasSpace from './components/CanvasSpace.vue'
-import SpeechBubble from './components/SpeechBubble.vue'
 import ThinkingDots from './components/ThinkingDots.vue'
-import InputBar from './components/InputBar.vue'
 import ConfigPanel from './components/ConfigPanel.vue'
 import { useSend } from './composables/useSend.js'
 import { useTTS } from './composables/useTTS.js'
@@ -40,37 +69,44 @@ import { useTimeline } from './composables/useTimeline.js'
 import { useConfigStore } from './stores/config.js'
 import { useTimelineStore } from './stores/timeline.js'
 
+const idle = ref(true)
 const configOpen = ref(false)
-const inputBar = ref(null)
+const inputOpen = ref(false)
+const inputText = ref('')
+const bottomInput = ref(null)
+const expandedCardId = ref(null)
+const sttText = ref('')
 const configStore = useConfigStore()
 const timeline = useTimelineStore()
 let lastInputWasVoice = false
+let bottomLongPressTimer = null
 
-// Voice enabled: TTS has baseUrl or webSpeech is on
-const voiceEnabled = computed(() => {
-  const cfg = configStore
-  return !!(cfg.ttsEnabled && cfg.ttsBaseUrl?.trim()) || !!cfg.webSpeech
-})
+// Current time for idle screen
+const currentTime = ref('')
+function updateTime() {
+  const now = new Date()
+  currentTime.value = now.getHours().toString().padStart(2, '0') + ' : ' + now.getMinutes().toString().padStart(2, '0')
+}
+updateTime()
+let timeInterval = null
+
+// Wake up from idle
+function wakeUp() {
+  idle.value = false
+}
 
 // TTS
 const tts = useTTS()
 
-// Send — with TTS integration
+// Send
 const { send, isThinking, bubbleText, bubbleVisible, toolLogs, showBubble, dismissBubble } = useSend({ tts })
 
-// Wire TTS → bubble dismissal (original behavior: bubble fades 3s after TTS ends)
-tts.onPlaybackEnd(() => {
-  dismissBubble(3000)
-})
+tts.onPlaybackEnd(() => { dismissBubble(3000) })
 
-const originalSend = send
 async function handleSend(text) {
-  if (!configStore.apiKey) {
-    configOpen.value = true
-    return
-  }
+  if (!configStore.apiKey) { configOpen.value = true; return }
   tts.unlockAudio()
-  originalSend(text)
+  send(text)
 }
 
 // STT
@@ -78,103 +114,105 @@ const { isRecording: sttRecording, startRecording: rawStartRecording, stopRecord
   tts,
   onResult: (text) => {
     lastInputWasVoice = true
+    sttText.value = ''
     handleSend(text)
   },
-  onError: (msg) => {
-    showBubble(msg, 3000)
-  },
+  onError: (msg) => { showBubble(msg, 3000) },
   onStart: (label) => {
-    // Clear any existing bubble immediately, then show recording label
     dismissBubble(0)
-    showBubble(label || '松开发送...')
+    showBubble(label || '说话中...')
   },
-  onStop: () => {
-    // Immediately clear "松开发送" bubble
-    bubbleVisible.value = false
-  },
-  onThinkingStart: () => {
-    isThinking.value = true
-  },
-  onThinkingEnd: () => {
-    isThinking.value = false
-  },
+  onStop: () => { bubbleVisible.value = false },
+  onThinkingStart: () => { isThinking.value = true },
+  onThinkingEnd: () => { isThinking.value = false },
+  onPartialResult: (text) => { sttText.value = text },
 })
 
-// Wrap start/stop to handle bubble clearing (matches original)
 function startRecording() {
-  // Clear bubble and stop TTS before recording
   bubbleVisible.value = false
   rawStartRecording()
 }
-
 function stopRecording() {
-  // Immediately clear recording bubble
   bubbleVisible.value = false
   rawStopRecording()
 }
 
-// Spacebar = push-to-talk (when not typing)
-const spaceDown = ref(false)
-
-function handleKeyDown(e) {
-  if (e.key !== ' ' || e.repeat) return
-  if (document.activeElement?.matches('input, textarea, select')) return
-  if (configOpen.value) return
-  e.preventDefault()
-  spaceDown.value = true
-  startRecording()
+// Bottom bar long press
+function onBottomTouchStart() {
+  bottomLongPressTimer = setTimeout(() => { startRecording() }, 300)
+}
+function onBottomTouchEnd() {
+  if (bottomLongPressTimer) { clearTimeout(bottomLongPressTimer); bottomLongPressTimer = null }
+  if (sttRecording.value) stopRecording()
 }
 
-function handleKeyUp(e) {
-  if (e.key !== ' ') return
-  if (!spaceDown.value) return
-  e.preventDefault()
-  spaceDown.value = false
-  stopRecording()
+// Canvas click
+function handleCanvasClick() {
+  if (inputOpen.value) { inputOpen.value = false }
 }
 
-function blurInput() {
-  inputBar.value?.blur?.()
+// Send text from input
+function sendText() {
+  const t = inputText.value.trim()
+  if (!t) return
+  inputText.value = ''
+  inputOpen.value = false
+  handleSend(t)
 }
 
-// Timeline navigation
+function maybeCloseInput() {
+  setTimeout(() => { if (!inputText.value.trim()) inputOpen.value = false }, 200)
+}
+
+// Expand/collapse cards
+function expandCard(id) { expandedCardId.value = id }
+function collapseCard() { expandedCardId.value = null }
+
+// Timeline
 const { isScrollingTimeline } = useTimeline()
-
 const timelineBubbleText = computed(() => {
   if (!isScrollingTimeline.value) return ''
   const info = timeline.getBubbleInfo()
   return info ? info.text : ''
 })
-const timelineBubbleVisible = computed(() => isScrollingTimeline.value && !!timelineBubbleText.value)
 
-// Wire TTS into speech — watch bubbleText changes to trigger TTS
+// TTS → bubble
 watch(bubbleText, async (text) => {
   if (text && !isScrollingTimeline.value && !sttRecording.value) {
     const played = await tts.playTTS(text)
-    // If TTS didn't play (disabled or error), auto-dismiss after 3s
-    if (!played) {
-      dismissBubble(3000)
-    }
-    // If TTS played, onPlaybackEnd will dismissBubble
+    if (!played) dismissBubble(3000)
   }
 })
 
-// After send completes, focus input only if not voice input
-watch(isThinking, (thinking, wasThinkin) => {
-  if (wasThinkin && !thinking && !lastInputWasVoice) {
-    inputBar.value?.focus?.()
-  }
-  if (wasThinkin && !thinking) {
-    lastInputWasVoice = false
-  }
+// Focus input when opened
+watch(inputOpen, (open) => {
+  if (open) nextTick(() => bottomInput.value?.focus())
 })
+
+// Spacebar push-to-talk
+const spaceDown = ref(false)
+function handleKeyDown(e) {
+  if (e.key !== ' ' || e.repeat) return
+  if (document.activeElement?.matches('input, textarea, select')) return
+  if (configOpen.value || idle.value) return
+  e.preventDefault()
+  spaceDown.value = true
+  startRecording()
+}
+function handleKeyUp(e) {
+  if (e.key !== ' ' || !spaceDown.value) return
+  e.preventDefault()
+  spaceDown.value = false
+  stopRecording()
+}
 
 onMounted(() => {
+  timeInterval = setInterval(updateTime, 10000)
   window.addEventListener('keydown', handleKeyDown)
   window.addEventListener('keyup', handleKeyUp)
 })
-
 onUnmounted(() => {
+  clearInterval(timeInterval)
   window.removeEventListener('keydown', handleKeyDown)
   window.removeEventListener('keyup', handleKeyUp)
 })
