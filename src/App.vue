@@ -3,13 +3,14 @@
   <div v-if="idle" class="idle-screen" @click="wakeUp" @touchstart.passive="wakeUp">
     <div class="idle-face">
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="20" stroke="rgba(0,0,0,0.15)" stroke-width="1.5"/>
-        <circle cx="18" cy="20" r="1.5" fill="rgba(0,0,0,0.2)"/>
-        <circle cx="30" cy="20" r="1.5" fill="rgba(0,0,0,0.2)"/>
-        <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(0,0,0,0.15)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+        <circle cx="18" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
+        <circle cx="30" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
+        <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
       </svg>
     </div>
     <div class="idle-time">{{ currentTime }}</div>
+    <div class="idle-greeting">Nice to meet you</div>
   </div>
 
   <!-- Active state -->
@@ -18,10 +19,10 @@
     <div class="top-face-bar">
       <div class="top-face">
         <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="24" cy="24" r="20" stroke="rgba(0,0,0,0.12)" stroke-width="1.5"/>
-          <circle cx="18" cy="20" r="1.5" fill="rgba(0,0,0,0.18)"/>
-          <circle cx="30" cy="20" r="1.5" fill="rgba(0,0,0,0.18)"/>
-          <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(0,0,0,0.12)" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+          <circle cx="18" cy="20" r="1.5" fill="rgba(255,255,255,0.35)"/>
+          <circle cx="30" cy="20" r="1.5" fill="rgba(255,255,255,0.35)"/>
+          <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(255,255,255,0.25)" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="top-bubble" :class="{ visible: bubbleVisible || isScrollingTimeline }">
