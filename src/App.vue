@@ -3,12 +3,14 @@
   <div class="face-icon" :class="{ 'face-idle': idle, 'face-active': !idle }"
     @click="idle ? wakeUp() : null"
     @touchstart.passive="idle ? wakeUp() : null"
+    :style="faceParallaxStyle"
   >
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
-      <circle cx="18" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
-      <circle cx="30" cy="20" r="1.5" fill="rgba(255,255,255,0.4)"/>
-      <path d="M18 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
+      <!-- Eyes follow the user's head position -->
+      <circle :cx="18 + eyeOffsetX" :cy="20 + eyeOffsetY" r="1.5" fill="rgba(255,255,255,0.4)"/>
+      <circle :cx="30 + eyeOffsetX" :cy="20 + eyeOffsetY" r="1.5" fill="rgba(255,255,255,0.4)"/>
+      <path :d="`M${18 + eyeOffsetX * 0.5} 29c2 2.5 4 3.5 6 3.5s4-1 6-3.5`" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round"/>
     </svg>
   </div>
 
@@ -80,6 +82,7 @@ import { useSend } from './composables/useSend.js'
 import { useTTS } from './composables/useTTS.js'
 import { useSTT } from './composables/useSTT.js'
 import { useTimeline } from './composables/useTimeline.js'
+import { useEyeTracking } from './composables/useEyeTracking.js'
 import { useConfigStore } from './stores/config.js'
 import { useTimelineStore } from './stores/timeline.js'
 
@@ -94,6 +97,21 @@ const configStore = useConfigStore()
 const timeline = useTimelineStore()
 let lastInputWasVoice = false
 let bottomLongPressTimer = null
+
+// Eye tracking — face follows user, parallax on idle
+const { headX, headY } = useEyeTracking({ smoothing: 0.12, updateRate: 30 })
+
+// Face eyes follow user's head
+const eyeOffsetX = computed(() => headX.value * 2.5)
+const eyeOffsetY = computed(() => headY.value * 1.5)
+
+// Idle face parallax — slight drift with head
+const faceParallaxStyle = computed(() => {
+  if (!idle.value) return {}
+  return {
+    transform: `translate(calc(-50% + ${headX.value * 8}px), calc(-50% + ${headY.value * 5}px))`,
+  }
+})
 
 // Current time for idle screen
 const currentTime = ref('')
