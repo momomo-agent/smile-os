@@ -36,6 +36,7 @@
       :expanded-card-id="expandedCardId"
       @expand-card="expandCard"
       @collapse-card="collapseCard"
+      @navigate="handleNavigate"
     />
     <ThinkingDots :visible="isThinking" />
 
@@ -182,8 +183,12 @@ function maybeCloseInput() {
 function expandCard(id) { expandedCardId.value = id }
 function collapseCard() { expandedCardId.value = null }
 
-// Timeline
-const { isScrollingTimeline } = useTimeline()
+// Timeline navigation (swipe between rounds)
+const { isScrollingTimeline, navigateAndRestore } = useTimeline()
+
+function handleNavigate(direction) {
+  navigateAndRestore(direction)
+}
 const timelineBubbleText = computed(() => {
   if (!isScrollingTimeline.value) return ''
   const info = timeline.getBubbleInfo()

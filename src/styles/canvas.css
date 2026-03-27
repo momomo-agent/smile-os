@@ -1,21 +1,22 @@
-/* ── Canvas (scrollable, dark) ── */
+/* ── Canvas (fixed viewport, no page scroll) ── */
 .canvas {
   position: fixed; inset: 0;
-  overflow-y: auto; overflow-x: hidden;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
+  overflow: hidden;
   background: #000;
   padding-top: 100px;
   padding-bottom: 80px;
 }
 
+/* Each round's cards scroll inside this container */
 .canvas-space {
-  position: relative;
-  width: 100%;
+  position: absolute;
+  top: 100px; bottom: 80px; left: 0; right: 0;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
   max-width: 400px;
   margin: 0 auto;
-  padding: 0 16px;
-  pointer-events: none;
+  padding: 0 16px 20px;
 }
 
 .greeting {
